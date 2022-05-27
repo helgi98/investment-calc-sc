@@ -21,10 +21,10 @@ trait PortfolioRepo[F[_]]:
 
 object PortfolioRepo:
 
-  def apply[F[_] : Async](xa: Transactor[F]): PortfolioRepo[F] =
+  def apply[F[_] : Async](ta: Transactor[F]): PortfolioRepo[F] =
     new PortfolioRepo[F] :
       override def findByRiskLevel(riskLevel: Int): F[List[Portfolio]] =
-        PortfolioRepo.byRiskLevelQuery(riskLevel).to[List].transact(xa).map {
+        PortfolioRepo.byRiskLevelQuery(riskLevel).to[List].transact(ta).map {
           _.groupBy(_.pId).view.mapValues(rs => {
             Portfolio(rs.head.lowerBound, rs.head.upperBound,
               rs.map(r => PortfolioAsset(r.asset, r.weight)))

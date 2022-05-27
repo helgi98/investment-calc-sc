@@ -15,7 +15,7 @@ object Common {
   private val postgresVersion = "42.2.19"
   // ~ http4s
   private val circeVersion = "0.14.2"
-  private val logbackVersion = "1.2.3"
+  private val logbackVersion = "1.2.11"
   private val specs2Version = "4.10.6"
 
   // Compiler plugin dependency versions
@@ -30,6 +30,7 @@ object Common {
 
   private[this] def dependencySettings = Seq(
     libraryDependencies ++= Seq(
+      "ch.qos.logback" % "logback-classic" % logbackVersion,
       "org.http4s" %% "http4s-dsl" % http4sVersion,
       "org.http4s" %% "http4s-ember-server" % http4sVersion,
       "org.http4s" %% "http4s-ember-client" % http4sVersion,
