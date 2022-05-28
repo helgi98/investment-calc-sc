@@ -9,27 +9,35 @@ import doobie.hikari.HikariTransactor
 import doobie.util.ExecutionContexts
 import doobie.util.transactor.Transactor
 import org.helgi.investment.config.{AppConfig, DbConfig, ServerConfig}
+import org.helgi.investment.integration.FmpApiClient
 import org.helgi.investment.repository.PortfolioRepo
 import org.helgi.investment.route.PortfolioRoutes
 import org.helgi.investment.service.PortfolioService
 import org.http4s.HttpRoutes
+import org.http4s.client.Client
+import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.server.{Router, Server}
 import pureconfig.*
 import pureconfig.error.ConfigReaderException
 
-object Server {
+object Server:
   def create[F[_] : Async]: Resource[F, Server] =
     for
-      conf <- config[F]
-      ta <- transactor[F](conf.db)
-      rts = Router("api" -> routes(ta))
-      s <- server[F](conf.server, rts)
+      cf <- config[F]
+      ta <- transactor[F](cf.db)
+      hc <- httpClient[F]
+      rts = Router("api" -> routes(cf, ta, hc))
+      s <- server[F](cf.server, rts)
     yield s
 
-  private[this] def routes[F[_] : Async](ta: Transactor[F]): HttpRoutes[F] =
+  private[this] def routes[F[_] : Async](config: AppConfig, ta: Transactor[F], hc: Client[F]): HttpRoutes[F] =
+    val fmpApiClient = FmpApiClient(hc, config.integration.fmp)
+
     val portfolioRepo = PortfolioRepo(ta)
+
     val portfolioService = PortfolioService(portfolioRepo)
+
     val portfolioRoutes = PortfolioRoutes(portfolioService)
 
     portfolioRoutes
@@ -62,4 +70,7 @@ object Server {
         config.password,
         ce)
     yield tx
-}
+
+
+  private[this] def httpClient[F[_] : Async]: Resource[F, Client[F]] =
+    EmberClientBuilder.default[F].build
