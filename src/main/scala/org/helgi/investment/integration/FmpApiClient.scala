@@ -24,9 +24,8 @@ object FmpApiClient:
   def apply[F[_] : Async](client: Client[F], config: FmpConfig): FmpApiClient[F] =
     new FmpApiClient[F] :
       override def getStockPrices(assetName: String, from: LocalDate, to: LocalDate): EitherT[F, String, FMPStockPriceResponse] =
-        val url = (Uri.fromString(config.apiUrl).toOption.get / "historical-price-full" / assetName)
-          .withQueryParam("serietype", "line")
-          .withQueryParam("apikey", config.apiKey)
+        val url = Uri.fromString(config.apiUrl).toOption.get / "historical-price-full" / assetName +?
+          ("serietype" -> "line") +? ("apikey" -> config.apiKey)
 
         EitherT(client.run(Request[F](uri = url)).use {
           case Successful(resp) =>
