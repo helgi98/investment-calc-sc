@@ -2,7 +2,6 @@ package org.helgi.investment.util
 
 import cats.effect.kernel.Concurrent
 import io.circe.{Decoder, Encoder}
-import org.http4s.circe.CirceInstances.*
 import org.http4s.circe.{CirceInstances, jsonEncoderOf, jsonOf}
 import org.http4s.{EntityDecoder, EntityEncoder}
 

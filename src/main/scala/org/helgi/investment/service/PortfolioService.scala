@@ -1,6 +1,5 @@
 package org.helgi.investment.service
 
-import cats.*
 import cats.data.EitherT
 import cats.effect.Async
 import cats.implicits.*

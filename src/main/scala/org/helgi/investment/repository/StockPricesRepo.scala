@@ -1,9 +1,8 @@
 package org.helgi.investment.repository
 
-import cats.*
 import cats.effect.Async
 import cats.implicits.*
-import org.helgi.investment.integration.{FMPStockPriceResponse, FmpApiClient}
+import org.helgi.investment.integration.FmpApiClient
 import org.helgi.investment.model.{StockPrice, StockPrices}
 
 import java.time.LocalDate

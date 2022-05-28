@@ -1,10 +1,9 @@
 package org.helgi.investment
 
-import cats.*
 import cats.data.EitherT
-import cats.effect.{Async, IO, Resource}
+import cats.effect.{Async, Resource}
 import cats.implicits.*
-import com.comcast.ip4s.{Host, Port, ipv4, port}
+import com.comcast.ip4s.{Host, Port}
 import doobie.hikari.HikariTransactor
 import doobie.util.ExecutionContexts
 import doobie.util.transactor.Transactor

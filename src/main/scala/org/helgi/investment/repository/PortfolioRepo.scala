@@ -1,13 +1,9 @@
 package org.helgi.investment.repository
 
-import cats.effect.kernel.Concurrent
-import cats.effect.{Async, IO}
+import cats.effect.Async
 import cats.implicits.*
-import doobie.Read
 import doobie.implicits.*
 import doobie.util.transactor.Transactor
-
-import scala.deriving.Mirror
 
 case class PortfolioAsset(assetName: String, weight: Double)
 

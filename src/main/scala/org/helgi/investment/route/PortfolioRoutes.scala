@@ -1,8 +1,6 @@
 package org.helgi.investment.route
 
-import cats.*
-import cats.data.{Validated, ValidatedNel}
-import cats.effect.{Async, IO}
+import cats.effect.Async
 import cats.implicits.*
 import io.circe.generic.auto.*
 import org.helgi.investment.service.*
@@ -10,7 +8,7 @@ import org.helgi.investment.util.*
 import org.helgi.investment.util.JsonUtil.*
 import org.http4s.dsl.Http4sDsl
 import org.http4s.dsl.io.{QueryParamDecoderMatcher, ValidatingQueryParamDecoderMatcher}
-import org.http4s.{HttpRoutes, ParseFailure, Response}
+import org.http4s.{HttpRoutes, Response}
 
 import java.time.LocalDate
 
