@@ -11,7 +11,6 @@ import java.time.LocalDate
 trait StockPricesRepo[F[_]]:
   def getStockPrices(assets: List[String], from: LocalDate, to: LocalDate): EitherT[F, String, List[StockPrices]]
 
-
 object StockPricesRepo:
   def fmp[F[_] : Async](fmpApiClient: FmpApiClient[F]): StockPricesRepo[F] =
     new StockPricesRepo[F] :
@@ -23,4 +22,3 @@ object StockPricesRepo:
             })
           }
         }.sequence
-

@@ -20,7 +20,6 @@ case class FMPStockPriceResponse(symbol: String, historical: List[FMPStockPrice]
 trait FmpApiClient[F[_]]:
   def getStockPrices(assetName: String, from: LocalDate, to: LocalDate): EitherT[F, String, FMPStockPriceResponse]
 
-
 object FmpApiClient:
   def apply[F[_] : Async](client: Client[F], config: FmpConfig): FmpApiClient[F] =
     new FmpApiClient[F] :

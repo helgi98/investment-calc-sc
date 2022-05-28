@@ -2,8 +2,8 @@ package org.helgi.investment.util
 
 import org.http4s.{ParseFailure, QueryParamDecoder}
 
-import java.time.format.DateTimeFormatter
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import scala.math.Ordering.Implicits.infixOrderingOps
 
 implicit def localDateParamDecoder(implicit formatter: DateTimeFormatter): QueryParamDecoder[LocalDate] =

@@ -14,7 +14,6 @@ case class Portfolio(riskToleranceLowerBound: Int,
 trait PortfolioRepo[F[_]]:
   def findByRiskLevel(riskLevel: Int): F[List[Portfolio]]
 
-
 object PortfolioRepo:
 
   def apply[F[_] : Async](ta: Transactor[F]): PortfolioRepo[F] =
@@ -38,4 +37,3 @@ object PortfolioRepo:
          |WHERE $level between p.risk_lower_bound and p.risk_upper_bound
        """.stripMargin
       .query[PortfolioRecord]
-
