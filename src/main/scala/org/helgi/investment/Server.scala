@@ -7,6 +7,7 @@ import com.comcast.ip4s.{Host, Port}
 import doobie.hikari.HikariTransactor
 import doobie.util.ExecutionContexts
 import doobie.util.transactor.Transactor
+import org.flywaydb.core.Flyway
 import org.helgi.investment.config.{AppConfig, DbConfig, ServerConfig}
 import org.helgi.investment.integration.FmpApiClient
 import org.helgi.investment.repository.{PortfolioRepo, StockPricesRepo}
@@ -25,6 +26,7 @@ object Server:
     for
       cf <- config[F]
       ta <- transactor[F](cf.db)
+      _ <- migrate(ta)
       hc <- httpClient[F]
       rts = Router("api" -> routes(cf, ta, hc))
       s <- server[F](cf.server, rts)
@@ -70,6 +72,13 @@ object Server:
         ce)
     yield tx
 
+  private[this] def migrate[F[_]](ta: HikariTransactor[F])(implicit F: Async[F]): Resource[F, Unit] =
+    Resource.eval(ta.configure { ds =>
+      F.blocking {
+        Flyway.configure().dataSource(ds).load().migrate()
+        ()
+      }
+    })
 
   private[this] def httpClient[F[_] : Async]: Resource[F, Client[F]] =
     EmberClientBuilder.default[F].build

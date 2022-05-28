@@ -4,7 +4,7 @@ import sbt._
 object Common {
   // Dependency versions
   private val doobieVersion = "1.0.0-RC1"
-  private val flywayVersion = "7.8.1"
+  private val flywayVersion = "8.5.11"
   private val http4sVersion = "0.23.12"
   private val oauthJwtVersion = "3.15.0"
   private val pureConfigVersion = "0.17.1"
@@ -40,6 +40,7 @@ object Common {
       "org.tpolecat" %% "doobie-core" % doobieVersion,
       "org.tpolecat" %% "doobie-postgres" % doobieVersion,
       "org.tpolecat" %% "doobie-hikari" % doobieVersion,
+      "org.flywaydb" % "flyway-core" % flywayVersion,
       "com.github.pureconfig" %% "pureconfig-core" % pureConfigVersion,
     )
   )
