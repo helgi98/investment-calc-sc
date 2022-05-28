@@ -17,8 +17,11 @@ import java.time.LocalDate
 
 object PortfolioRoutes:
   object riskLevelQP extends QueryParamDecoderMatcher[Int]("riskLevel")
+
   object contributionQP extends ValidatingQueryParamDecoderMatcher[BigDecimal]("contribution")(positiveDecoder(0))
+
   object fromQP extends ValidatingQueryParamDecoderMatcher[LocalDate]("from")(pastOrPresentDateDecoder)
+
   object toQP extends ValidatingQueryParamDecoderMatcher[LocalDate]("to")(pastOrPresentDateDecoder)
 
   def apply[F[_] : Async](portfolioService: PortfolioService[F]): HttpRoutes[F] =
@@ -30,7 +33,7 @@ object PortfolioRoutes:
       case PortfolioError.ValidationError(msg) => BadRequest(msg)
 
 
-    HttpRoutes.of[F] {
+    HttpRoutes.of {
       case GET -> Root / "investment-portfolio" :? riskLevelQP(level) =>
         for
           portfolioOrError <- portfolioService.getPortfolio(level).value

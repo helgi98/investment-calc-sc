@@ -48,15 +48,14 @@ object Server:
     EmberServerBuilder
       .default[F]
       .withHostOption(Host.fromString(config.host))
-      .withPort(Port.fromInt(config.port).getOrElse(port"8080"))
+      .withPort(Port.fromInt(config.port).get)
       .withHttpApp(routes.orNotFound)
       .build
 
   private[this] def config[F[_]](implicit F: Async[F],
                                  reader: ConfigReader[AppConfig]): Resource[F, AppConfig] =
     Resource.eval(
-      EitherT(F.blocking(ConfigSource.default.cursor()))
-        .subflatMap(reader.from)
+      EitherT(F.blocking(ConfigSource.default.load[AppConfig]))
         .leftMap(ConfigReaderException[AppConfig])
         .rethrowT
     )

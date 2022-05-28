@@ -8,6 +8,7 @@ import org.helgi.investment.model.StockPrices
 import org.helgi.investment.model.response.*
 import org.helgi.investment.repository.*
 import org.helgi.investment.service.PortfolioError.*
+import org.helgi.investment.util.DateUtil.*
 
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -40,15 +41,14 @@ object PortfolioService:
                                      to: LocalDate,
                                      contribution: BigDecimal,
                                      riskLevel: Int): EitherT[F, PortfolioError, PortfolioEvaluationDTO] =
-        if (from.isAfter(to)) {
-          return EitherT.leftT(ValidationError("[From] date should not be after [To] date"))
-        }
-
-        for
-          portfolio <- getPortfolio(riskLevel)
-          assetNames = portfolio.assets.map(_.assetName)
-          stockPrices <- EitherT.right(stockPricesRepo.getStockPrices(assetNames, from, to))
-        yield evaluatePortfolio(portfolio.assets, stockPrices, contribution, from, to)
+        if from.isAfter(to) then
+          EitherT.leftT(ValidationError("[From] date should not be after [To] date"))
+        else
+          for
+            portfolio <- getPortfolio(riskLevel)
+            assetNames = portfolio.assets.map(_.assetName)
+            stockPrices <- EitherT.right(stockPricesRepo.getStockPrices(assetNames, from, to))
+          yield evaluatePortfolio(portfolio.assets, stockPrices, contribution, from, to)
 
       def evaluatePortfolio(assets: List[PortfolioAssetDTO],
                             stockPrices: List[StockPrices],
@@ -56,8 +56,9 @@ object PortfolioService:
                             from: LocalDate,
                             to: LocalDate): PortfolioEvaluationDTO =
         val stockPricesMap = stockPrices.map(
-          sp => sp.asset -> sp.prices.groupMapReduce(_.date.withDayOfMonth(1))(identity)
-          ((x, y) => if (x.date.isBefore(y.date)) x else y)
+          sp => sp.asset -> sp.prices.groupMapReduce(_.date.firstDayOfMonth)(identity) {
+            (x, y) => if x.date.isBefore(y.date) then x else y
+          }
         ).toMap
 
         val portfolioValue = assets.filter(stockPricesMap contains _.assetName)
@@ -70,9 +71,9 @@ object PortfolioService:
             shares * lastPrice
           }.sum
 
-        val totalContribution = contribution * investmentPeriods(from.withDayOfMonth(1), to.withDayOfMonth(1))
+        val totalContribution = contribution * investmentPeriods(from.firstDayOfMonth, to.firstDayOfMonth)
 
         PortfolioEvaluationDTO(portfolioValue, totalContribution)
 
       def investmentPeriods(from: LocalDate, to: LocalDate): Long =
-        ChronoUnit.MONTHS.between(from.withDayOfMonth(1), to.withDayOfMonth(1)) + 1
+        ChronoUnit.MONTHS.between(from.firstDayOfMonth, to.firstDayOfMonth) + 1

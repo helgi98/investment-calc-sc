@@ -31,8 +31,6 @@ object PortfolioRepo:
           }).values.toList
         }
 
-  import Reader.*
-
   // search portfolio
   case class PortfolioRecord(pId: Int, lowerBound: Int, upperBound: Int, asset: String, weight: Double)
 
@@ -44,11 +42,3 @@ object PortfolioRepo:
        """.stripMargin
       .query[PortfolioRecord]
 
-
-  object Reader:
-
-    import doobie.implicits.javatimedrivernative.*
-
-    implicit val readPortfolio: Read[PortfolioRecord] =
-      Read[(Int, Int, Int, String, Double)]
-        .map(summon[Mirror.Of[PortfolioRecord]].fromProduct(_))
