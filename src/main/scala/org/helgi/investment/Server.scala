@@ -17,6 +17,7 @@ import org.http4s.HttpRoutes
 import org.http4s.client.Client
 import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.ember.server.EmberServerBuilder
+import org.http4s.server.middleware.Logger
 import org.http4s.server.{Router, Server}
 import pureconfig.*
 import pureconfig.error.ConfigReaderException
@@ -28,7 +29,7 @@ object Server:
       ta <- transactor[F](cf.db)
       _ <- migrate(ta)
       hc <- httpClient[F]
-      rts = Router("api" -> routes(cf, ta, hc))
+      rts = Router("api" -> logged(routes(cf, ta, hc)))
       s <- server[F](cf.server, rts)
     yield s
 
@@ -43,6 +44,11 @@ object Server:
     val portfolioRoutes = PortfolioRoutes(portfolioService)
 
     portfolioRoutes
+
+  private[this] def logged[F[_] : Async](routes: HttpRoutes[F]): HttpRoutes[F] =
+    Logger.httpRoutes(false, false) {
+      routes
+    }
 
   private[this] def server[F[_] : Async](config: ServerConfig,
                                          routes: HttpRoutes[F]): Resource[F, Server] =

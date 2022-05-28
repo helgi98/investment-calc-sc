@@ -6,20 +6,15 @@ object Common {
   private val doobieVersion = "1.0.0-RC1"
   private val flywayVersion = "8.5.11"
   private val http4sVersion = "0.23.12"
-  private val oauthJwtVersion = "3.15.0"
   private val pureConfigVersion = "0.17.1"
 
   // Transient dependency versions
   // ~ doobie
   private val h2Version = "1.4.200"
-  private val postgresVersion = "42.2.19"
+  private val postgresVersion = "42.3.6"
   // ~ http4s
   private val circeVersion = "0.14.2"
   private val logbackVersion = "1.2.11"
-  private val specs2Version = "4.10.6"
-
-  // Compiler plugin dependency versions
-  private val kindProjectorVersion = "0.11.3"
 
   private[this] def projectSettings = Seq(
     name := "invest-calc"
@@ -41,6 +36,7 @@ object Common {
       "org.tpolecat" %% "doobie-postgres" % doobieVersion,
       "org.tpolecat" %% "doobie-hikari" % doobieVersion,
       "org.flywaydb" % "flyway-core" % flywayVersion,
+      "org.postgresql" % "postgresql" % postgresVersion,
       "com.github.pureconfig" %% "pureconfig-core" % pureConfigVersion,
     )
   )
