@@ -46,7 +46,7 @@ object PortfolioService:
           for
             portfolio <- getPortfolio(riskLevel)
             assetNames = portfolio.assets.map(_.assetName)
-            stockPrices <- EitherT.right(stockPricesRepo.getStockPrices(assetNames, from, to))
+            stockPrices <- stockPricesRepo.getStockPrices(assetNames, from, to).leftMap(PortfolioNotFound(_))
           yield evaluatePortfolio(portfolio.assets, stockPrices, contribution, from, to)
 
       def evaluatePortfolio(assets: List[PortfolioAssetDTO],
