@@ -16,7 +16,7 @@ object StockPricesRepo:
   def fmp[F[_] : Async](fmpApiClient: FmpApiClient[F]): StockPricesRepo[F] =
     new StockPricesRepo[F] :
       override def getStockPrices(assets: List[String], from: LocalDate, to: LocalDate): F[List[StockPrices]] =
-        assets.map[F[StockPrices]] { a =>
+        assets.map { a =>
           fmpApiClient.getStockPrices(a, from, to).map { fmpData =>
             StockPrices(fmpData.symbol, fmpData.historical.map {
               r => StockPrice(r.date, r.close)

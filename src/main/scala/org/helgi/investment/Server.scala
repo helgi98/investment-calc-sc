@@ -10,7 +10,7 @@ import doobie.util.ExecutionContexts
 import doobie.util.transactor.Transactor
 import org.helgi.investment.config.{AppConfig, DbConfig, ServerConfig}
 import org.helgi.investment.integration.FmpApiClient
-import org.helgi.investment.repository.PortfolioRepo
+import org.helgi.investment.repository.{PortfolioRepo, StockPricesRepo}
 import org.helgi.investment.route.PortfolioRoutes
 import org.helgi.investment.service.PortfolioService
 import org.http4s.HttpRoutes
@@ -35,8 +35,9 @@ object Server:
     val fmpApiClient = FmpApiClient(hc, config.integration.fmp)
 
     val portfolioRepo = PortfolioRepo(ta)
+    val stockPricesRepo = StockPricesRepo.fmp(fmpApiClient)
 
-    val portfolioService = PortfolioService(portfolioRepo)
+    val portfolioService = PortfolioService(portfolioRepo, stockPricesRepo)
 
     val portfolioRoutes = PortfolioRoutes(portfolioService)
 
