@@ -33,7 +33,8 @@ object PortfolioRepo:
   def byRiskLevelQuery(level: Int): doobie.Query0[PortfolioRecord] =
     sql"""
          |SELECT p.id, p.risk_lower_bound, p.risk_upper_bound, a.name, pa.weight
-         |FROM portfolio p INNER JOIN portfolio_asset pa on INNER JOIN asset a
+         |FROM portfolio p INNER JOIN portfolio_asset pa on p.id = pa.portfolio_id
+         |INNER JOIN asset a ON a.id = pa.asset_id
          |WHERE $level between p.risk_lower_bound and p.risk_upper_bound
        """.stripMargin
       .query[PortfolioRecord]
