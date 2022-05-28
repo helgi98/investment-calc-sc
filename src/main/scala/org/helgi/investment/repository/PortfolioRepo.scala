@@ -20,7 +20,7 @@ object PortfolioRepo:
     new PortfolioRepo[F] :
       override def findByRiskLevel(riskLevel: Int): F[List[Portfolio]] =
         PortfolioRepo.byRiskLevelQuery(riskLevel).to[List].transact(ta).map {
-          _.groupBy(_.pId).view.mapValues(rs => {
+          _.groupBy(_.pId).view.mapValues({ rs =>
             Portfolio(rs.head.lowerBound, rs.head.upperBound,
               rs.map(r => PortfolioAsset(r.asset, r.weight)))
           }).values.toList
