@@ -59,8 +59,7 @@ object Server:
       .withHttpApp(routes.orNotFound)
       .build
 
-  private[this] def config[F[_]](implicit F: Async[F],
-                                 reader: ConfigReader[AppConfig]): Resource[F, AppConfig] =
+  private[this] def config[F[_]](implicit F: Async[F]): Resource[F, AppConfig] =
     Resource.eval(
       EitherT(F.blocking(ConfigSource.default.load[AppConfig]))
         .leftMap(ConfigReaderException[AppConfig])
@@ -79,8 +78,8 @@ object Server:
     yield tx
 
   private[this] def migrate[F[_]](ta: HikariTransactor[F])(implicit F: Async[F]): Resource[F, Unit] =
-    Resource.eval(ta.configure { ds =>
-      F.blocking {
+    Resource.eval(ta configure { ds =>
+      F blocking {
         Flyway.configure().dataSource(ds).load().migrate()
         ()
       }
